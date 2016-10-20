@@ -18,7 +18,7 @@ public class WindowGame extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private JButton btnHero;
 	private boolean play;
-	private int seconds, areaSize;
+	private int seconds;
 	private JLabel areaVision;
 	private Timer timerEnemies;
 	private Timer timerClock;
@@ -33,10 +33,12 @@ public class WindowGame extends JFrame{
 		getContentPane().setBackground(Color.WHITE);
 		btnHero = new JButton("H");
 		add(btnHero);
-		lblLeft = new JLabel("");
-		lblRigth = new JLabel("");
-		lblCenter = new JLabel("");
-		
+		lblLeft = new JLabel();
+		lblRigth = new JLabel();
+		lblCenter = new JLabel();
+		add(lblCenter);
+		add(lblRigth);
+		add(lblLeft);
 		lblClock = new JLabel("");
 		lblClock.setBounds(10, 10, 200, 100);
 		lblClock.setFont(new Font("Arial", Font.PLAIN, 22));
@@ -48,28 +50,13 @@ public class WindowGame extends JFrame{
 		setVisible(true);
 	}
 
-	public void init(int areaSize){
-		this.areaSize = areaSize;
+	public void init(){
 		play = true;
 		btnHero.setBounds(getWidth()/2,getHeight() - 100 , 50,50);
-		this.createAreas();
+		move();
 		generateEnemies();
 		moveEnemiesDown();
 		refreshClock();
-	}
-
-	private void createAreas() {
-		//lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblCenter.setBounds(100,100,100,100);
-		lblCenter.setBackground(Color.RED);
-		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblLeft.setBackground(Color.YELLOW);
-		lblRigth.setBounds(this.lblCenter.getX()+this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblRigth.setBackground(Color.BLUE);
-		add(lblCenter);
-		add(lblRigth);
-		add(lblLeft);
-		getContentPane().repaint();
 	}
 
 	public void moveToRigth(){
@@ -151,10 +138,31 @@ public class WindowGame extends JFrame{
 		});
 		timerEnemies.start();
 	}
-
+	
+	public void move(){
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(play){
+					double numero = Math.random();
+					if (numero < 0.5){
+						moveToLeft();
+					}else{
+						moveToRigth();
+					}
+					try {
+						Thread.sleep(300);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		thread.start();
+	}
 
 	public static void main(String[] args) {
 		WindowGame w = new WindowGame();
-		w.init(200);
+		w.init();
 	}
 }

@@ -33,10 +33,12 @@ public class WindowGame extends JFrame{
 		getContentPane().setBackground(Color.WHITE);
 		btnHero = new JButton("H");
 		add(btnHero);
-		lblLeft = new JLabel("");
-		lblRigth = new JLabel("");
-		lblCenter = new JLabel("");
-		
+		lblLeft = new JLabel();
+		lblRigth = new JLabel();
+		lblCenter = new JLabel();
+		add(lblCenter);
+		add(lblRigth);
+		add(lblLeft);
 		lblClock = new JLabel("");
 		lblClock.setBounds(10, 10, 200, 100);
 		lblClock.setFont(new Font("Arial", Font.PLAIN, 22));
@@ -52,24 +54,15 @@ public class WindowGame extends JFrame{
 		this.areaSize = areaSize;
 		play = true;
 		btnHero.setBounds(getWidth()/2,getHeight() - 100 , 50,50);
-		this.createAreas();
-		generateEnemies();
-		moveEnemiesDown();
-		refreshClock();
-	}
-
-	private void createAreas() {
-		//lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblCenter.setBounds(100,100,100,100);
+		lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblCenter.setBackground(Color.RED);
 		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblLeft.setBackground(Color.YELLOW);
 		lblRigth.setBounds(this.lblCenter.getX()+this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblRigth.setBackground(Color.BLUE);
-		add(lblCenter);
-		add(lblRigth);
-		add(lblLeft);
-		getContentPane().repaint();
+		generateEnemies();
+		moveEnemiesDown();
+		refreshClock();
 	}
 
 	public void moveToRigth(){

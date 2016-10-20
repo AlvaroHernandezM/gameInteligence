@@ -33,9 +33,9 @@ public class WindowGame extends JFrame{
 		getContentPane().setBackground(Color.WHITE);
 		btnHero = new JButton("H");
 		add(btnHero);
-		lblLeft = new JLabel("");
-		lblRigth = new JLabel("");
-		lblCenter = new JLabel("");
+		lblLeft = new JLabel();
+		lblRigth = new JLabel();
+		lblCenter = new JLabel();
 		
 		lblClock = new JLabel("");
 		lblClock.setBounds(10, 10, 200, 100);
@@ -59,8 +59,7 @@ public class WindowGame extends JFrame{
 	}
 
 	private void createAreas() {
-		//lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblCenter.setBounds(100,100,100,100);
+		lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblCenter.setBackground(Color.RED);
 		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblLeft.setBackground(Color.YELLOW);
