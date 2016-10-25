@@ -61,23 +61,22 @@ public class WindowGame extends JFrame {
 
 	private void createAreas() {
 		lblCenter.setBounds(btnHero.getX(), btnHero.getY() - this.areaSize, btnHero.getWidth(), this.areaSize);
-		//lblCenter.setBackground(Color.RED);
-		//lblCenter.setOpaque(true);
+		// lblCenter.setBackground(Color.RED);
+		// lblCenter.setOpaque(true);
 		Border border = BorderFactory.createLineBorder(Color.RED, 2);
 		lblCenter.setBorder(border);
 
-
 		lblLeft.setBounds(this.lblCenter.getX() - this.lblCenter.getWidth(), btnHero.getY() - this.areaSize,
 				btnHero.getWidth(), this.areaSize + btnHero.getHeight());
-		//lblLeft.setOpaque(true);
-		//lblLeft.setBackground(Color.YELLOW);
+		// lblLeft.setOpaque(true);
+		// lblLeft.setBackground(Color.YELLOW);
 		border = BorderFactory.createLineBorder(Color.BLUE, 2);
 		lblLeft.setBorder(border);
 
 		lblRigth.setBounds(this.lblCenter.getX() + this.lblCenter.getWidth(), btnHero.getY() - this.areaSize,
 				btnHero.getWidth(), this.areaSize + btnHero.getHeight());
-		//lblRigth.setOpaque(true);
-		//lblRigth.setBackground(Color.BLUE);
+		// lblRigth.setOpaque(true);
+		// lblRigth.setBackground(Color.BLUE);
 		border = BorderFactory.createLineBorder(Color.BLUE, 2);
 		lblRigth.setBorder(border);
 
@@ -88,6 +87,7 @@ public class WindowGame extends JFrame {
 		if (btnHero.getX() + 60 < getWidth()) {
 			btnHero.setLocation(new Point(lblRigth.getX(), btnHero.getY()));
 			createAreas();
+			repaint();
 		}
 	}
 
@@ -95,6 +95,7 @@ public class WindowGame extends JFrame {
 		if (btnHero.getX() - 10 > 0) {
 			btnHero.setLocation(new Point(lblLeft.getX(), btnHero.getY()));
 			createAreas();
+			repaint();
 		}
 	}
 
@@ -140,33 +141,26 @@ public class WindowGame extends JFrame {
 						if (component instanceof JButton) {
 							JButton btnEnemie = (JButton) component;
 							if (btnEnemie.getText().equals("X")) {
+								// Colision con el area central
 								if (btnEnemie.getBounds().intersects(lblCenter.getBounds())) {
 									for (Component newcomponent : getContentPane().getComponents()) {
-										int xEnemie1 = 0 , xEnemie2 = 0;
+										int xEnemie1 = 0, xEnemie2 = 0;
 										if (newcomponent instanceof JButton) {
 											JButton newbtnEnemie = (JButton) newcomponent;
 											if (newbtnEnemie.getText().equals("X")) {
-												if (newbtnEnemie.getBounds().intersects(lblRigth.getBounds())) {
-													System.out.println("Izq");
-													moveToLeft();
-													break;
-												} 
-												else if (newbtnEnemie.getBounds().intersects(lblLeft.getBounds())) {
-													System.out.println("Der");
+												if (newbtnEnemie.getBounds().intersects(lblLeft.getBounds())) {
 													moveToRigth();
+													break;
+												} else if (newbtnEnemie.getBounds().intersects(lblRigth.getBounds())) {
+													moveToLeft();
 													break;
 												}
 											}
 										}
-									}									
+									}
 								}
 							}
 						}
-					}
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
 					}
 				}
 
