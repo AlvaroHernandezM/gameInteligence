@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,6 +23,9 @@ public class WindowGame extends JFrame {
 	private Timer timerEnemies;
 	private Timer timerClock;
 	private JLabel lblLeft, lblRigth, lblCenter, lblClock;
+	private boolean colisionRigth,colisionLeft;
+	private int yEnemieLeft, yEnemieRigth;
+	private Border border;
 
 	public WindowGame() {
 		setLayout(null);
@@ -50,52 +52,61 @@ public class WindowGame extends JFrame {
 
 	public void init(int areaSize) {
 		this.areaSize = areaSize;
+		colisionRigth=false;
+		colisionLeft=false;
+		yEnemieLeft = 0;
+		yEnemieRigth = 0;
 		play = true;
 		btnHero.setBounds(getWidth() / 2, getHeight() - 100, 50, 50);
-		createAreas();
+		generateAreas();
 		generateEnemies();
 		moveEnemiesDown();
 		moveHero();
+		verifyAreaLeft();
+		verifyAreaRigth();
 		refreshClock();
 	}
 
-	private void createAreas() {
+	/**
+	 * actualiza la posición de las áreas de visión con respecto a la posición del heroe 
+	 */
+	private void generateAreas() {
 		lblCenter.setBounds(btnHero.getX(), btnHero.getY() - this.areaSize, btnHero.getWidth(), this.areaSize);
-		// lblCenter.setBackground(Color.RED);
-		// lblCenter.setOpaque(true);
-		Border border = BorderFactory.createLineBorder(Color.RED, 2);
+		border = BorderFactory.createLineBorder(Color.BLUE, 2);
 		lblCenter.setBorder(border);
 
 		lblLeft.setBounds(this.lblCenter.getX() - this.lblCenter.getWidth(), btnHero.getY() - this.areaSize,
 				btnHero.getWidth(), this.areaSize + btnHero.getHeight());
-		// lblLeft.setOpaque(true);
-		// lblLeft.setBackground(Color.YELLOW);
 		border = BorderFactory.createLineBorder(Color.BLUE, 2);
 		lblLeft.setBorder(border);
 
 		lblRigth.setBounds(this.lblCenter.getX() + this.lblCenter.getWidth(), btnHero.getY() - this.areaSize,
 				btnHero.getWidth(), this.areaSize + btnHero.getHeight());
-		// lblRigth.setOpaque(true);
-		// lblRigth.setBackground(Color.BLUE);
 		border = BorderFactory.createLineBorder(Color.BLUE, 2);
 		lblRigth.setBorder(border);
 
 		repaint();
 	}
 
-	public void moveToRigth() {
-		if (btnHero.getX() + 60 < getWidth()) {
+	public boolean moveToRigth() {
+		if (btnHero.getX() + 10 < getWidth()) {
 			btnHero.setLocation(new Point(lblRigth.getX(), btnHero.getY()));
-			createAreas();
+			generateAreas();
 			repaint();
+			return true;
+		} else{
+			return false;
 		}
 	}
 
-	public void moveToLeft() {
+	public boolean moveToLeft() {
 		if (btnHero.getX() - 10 > 0) {
 			btnHero.setLocation(new Point(lblLeft.getX(), btnHero.getY()));
-			createAreas();
+			generateAreas();
 			repaint();
+			return true;
+		}else{
+			return false;
 		}
 	}
 
@@ -108,7 +119,7 @@ public class WindowGame extends JFrame {
 							JButton btnEnemie = (JButton) component;
 							if (btnEnemie.getText().equals("X")) {
 								if (btnEnemie.getY() > getHeight()) {
-									getContentPane().remove(component);
+									getContentPane().remove(component);									
 									repaint();
 									break;
 								} else {
@@ -132,35 +143,205 @@ public class WindowGame extends JFrame {
 		});
 		thread.start();
 	}
+	
+	/**
+	 * verifica cando exista una colision en el area de vision de la izquierda, con la finalidad
+	 * de conocer el estado de las colisiones en esta area 
+	 */
+	private void verifyAreaLeft(){
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				while (play) {
+					int numEnemiesWithoutColision = 0;
+					int componentesEnemies = 0;
+					for (Component newcomponent : getContentPane().getComponents()) {
+						if (newcomponent instanceof JButton) {
+							JButton newbtnEnemie = (JButton) newcomponent;
+							if (newbtnEnemie.getText().equals("X")) {
+								componentesEnemies+=1;
+								if (newbtnEnemie.getBounds().intersects(lblLeft.getBounds())) {
+									border = BorderFactory.createLineBorder(Color.RED, 2);
+									lblLeft.setBorder(border);
+									colisionLeft=true;
+									if(newbtnEnemie.getY()>yEnemieLeft)
+										yEnemieLeft = newbtnEnemie.getY();									
+									if(yEnemieLeft>=670)
+										yEnemieLeft=0;
+//									if((yEnemieLeft>=510)&&(!colisionRigth)){
+//										if(!moveToRigth()){
+//											moveToLeft();
+//											moveToLeft();
+//										}
+//										try {
+//											Thread.sleep(500);
+//										} catch (InterruptedException e) {
+//											e.printStackTrace();
+//										}
+//									}																		
+									//break;
+								} else {
+									numEnemiesWithoutColision+=1;
+								}
+							}
+						}
+					}
+					if(numEnemiesWithoutColision==componentesEnemies){
+						colisionLeft=false;
+						yEnemieLeft=0;
+						border = BorderFactory.createLineBorder(Color.BLUE, 2);
+						lblLeft.setBorder(border);
+					}
+				}
+			}
+		});
+		thread.start();
+	}
+	/**
+	 * verifica cando exista una colision en el area de vision de la derecha, con la finalidad
+	 * de conocer el estado de las colisiones en esta area 
+	 */
+	private void verifyAreaRigth(){
+		Thread thread = new Thread(new Runnable() {
+			public void run() {
+				while (play) {
+					int numEnemiesWithoutColision = 0;
+					int componentesEnemies = 0;
+					for (Component newcomponent : getContentPane().getComponents()) {
+						if (newcomponent instanceof JButton) {
+							JButton newbtnEnemie = (JButton) newcomponent;
+							if (newbtnEnemie.getText().equals("X")) {
+								componentesEnemies+=1;
+								if (newbtnEnemie.getBounds().intersects(lblRigth.getBounds())) {
+									border = BorderFactory.createLineBorder(Color.RED, 2);
+									lblRigth.setBorder(border);
+									colisionRigth=true;
+									if(newbtnEnemie.getY()>yEnemieRigth)
+										yEnemieRigth = newbtnEnemie.getY();									
+									if(yEnemieRigth>=670)
+										yEnemieRigth=0;
+//									if((yEnemieRigth>=510)&&(!colisionLeft)){
+//										if(!moveToLeft()){
+//											moveToRigth();
+//											moveToRigth();
+//										}
+//										try {
+//											Thread.sleep(500);
+//										} catch (InterruptedException e) {
+//											e.printStackTrace();
+//										}
+//									}
+									//break;
+								} else {
+									numEnemiesWithoutColision+=1;
+								}
+							} 
+						}
+					}
+					if(numEnemiesWithoutColision==componentesEnemies){
+						colisionRigth=false;
+						yEnemieRigth=0;
+						border = BorderFactory.createLineBorder(Color.BLUE, 2);
+						lblRigth.setBorder(border);
+					}
+				}
+			}
+		});
+		thread.start();
+	}
+	
+	/**
+	 * método para verificar cuando existen colisiones en las areas de vision
+	 * y tomar una decisión cuando existen multiples colisiones a partir de las posiciones de los enemigos
+	 * @param btnEnemie
+	 */
+	private void executeMovement(JButton btnEnemie){
+		if(!colisionLeft && !colisionRigth){
+			if(!moveToRigth()){
+				moveToLeft();
+				moveToLeft();											
+			}
+		} else if(colisionLeft && !colisionRigth){
+			if(!moveToRigth()){
+				moveToLeft();
+				moveToLeft();
+			}
+		} else if (!colisionLeft && colisionRigth){
+			if(!moveToLeft()){
+				moveToRigth();
+				moveToRigth();
+			}
+		} else if (colisionLeft && colisionRigth){
+//			System.out.println("en izquierda esta "+colisionLeft+" con: "+yEnemieLeft);
+//			System.out.println("en derecha esta "+colisionRigth+" con: "+yEnemieRigth);
+//			System.out.println("Y el del centro esta en y en "+btnEnemie.getY());
+			if(btnEnemie.getY()>=yEnemieLeft && btnEnemie.getY()>=yEnemieRigth){
+				if(yEnemieLeft>=yEnemieRigth){
+					if(!moveToRigth()){
+						moveToLeft();
+						moveToLeft();
+					}
+				} else {
+					if(!moveToLeft()){
+						moveToRigth();
+						moveToRigth();
+					}
+				}
+			} else if(yEnemieLeft>=550 && yEnemieRigth>=550){
+				System.out.println("me quedo quieto porque no puedo moverme a los lados");
+			} else if(yEnemieLeft>=550 && yEnemieRigth<550){
+				if(!moveToRigth()){
+					moveToLeft();
+					moveToLeft();
+				}
+			} else if(yEnemieRigth>=550 && yEnemieLeft<550){
+				if(!moveToLeft()){
+					moveToRigth();
+					moveToRigth();
+				}
+			} else if(yEnemieRigth>yEnemieLeft){
+				if(!moveToLeft()){
+					moveToRigth();
+					moveToRigth();
+				}
+			} else {
+				if(!moveToLeft()){
+					moveToRigth();
+					moveToRigth();
+				}
+			}
+		}
+	}
 
 	public void moveHero() {
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				while (play) {
+					int numEnemiesWithoutColision = 0;
+					int componentesEnemies = 0;
 					for (Component component : getContentPane().getComponents()) {
 						if (component instanceof JButton) {
 							JButton btnEnemie = (JButton) component;
 							if (btnEnemie.getText().equals("X")) {
-								// Colision con el area central
+								// Detectando colision con el area central								
 								if (btnEnemie.getBounds().intersects(lblCenter.getBounds())) {
-									for (Component newcomponent : getContentPane().getComponents()) {
-										int xEnemie1 = 0, xEnemie2 = 0;
-										if (newcomponent instanceof JButton) {
-											JButton newbtnEnemie = (JButton) newcomponent;
-											if (newbtnEnemie.getText().equals("X")) {
-												if (newbtnEnemie.getBounds().intersects(lblLeft.getBounds())) {
-													moveToRigth();
-													break;
-												} else if (newbtnEnemie.getBounds().intersects(lblRigth.getBounds())) {
-													moveToLeft();
-													break;
-												}
-											}
-										}
+									border = BorderFactory.createLineBorder(Color.RED, 2);
+									lblCenter.setBorder(border);
+									executeMovement(btnEnemie);
+									try {
+										Thread.sleep(500);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
 									}
+								} else {
+									numEnemiesWithoutColision+=1;
 								}
 							}
-						}
+						}						
+					}
+					if(numEnemiesWithoutColision==componentesEnemies){
+						colisionRigth=false;
+						border = BorderFactory.createLineBorder(Color.BLUE, 2);
+						lblCenter.setBorder(border);
 					}
 				}
 
@@ -196,7 +377,7 @@ public class WindowGame extends JFrame {
 	}
 
 	public void generateEnemies() {
-		timerEnemies = new Timer(1000, new ActionListener() {
+		timerEnemies = new Timer(1500, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				addEnemie();
@@ -207,6 +388,6 @@ public class WindowGame extends JFrame {
 
 	public static void main(String[] args) {
 		WindowGame w = new WindowGame();
-		w.init(200);
+		w.init(150);
 	}
 }
