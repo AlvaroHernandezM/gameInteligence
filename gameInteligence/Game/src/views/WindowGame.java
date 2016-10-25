@@ -19,32 +19,23 @@ public class WindowGame extends JFrame{
 	private JButton btnHero;
 	private boolean play;
 	private int seconds, areaSize;
-	private JLabel areaVision;
 	private Timer timerEnemies;
 	private Timer timerClock;
 	private JLabel lblLeft,lblRigth,lblCenter,lblClock;
 
 	public WindowGame() {
-
 		setLayout(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setExtendedState(MAXIMIZED_BOTH);
+		//setExtendedState(MAXIMIZED_BOTH);
+		setSize(1380, 740);
 		setTitle("Game");
 		getContentPane().setBackground(Color.WHITE);
 		btnHero = new JButton("H");
 		add(btnHero);
-		lblLeft = new JLabel("");
-		lblRigth = new JLabel("");
-		lblCenter = new JLabel("");
-		
 		lblClock = new JLabel("");
 		lblClock.setBounds(10, 10, 200, 100);
 		lblClock.setFont(new Font("Arial", Font.PLAIN, 22));
 		add(lblClock);
-		areaVision = new JLabel();
-		add(areaVision);
-		//areaVision.setBounds(btnHero.getX()-75, y, width, height);
-
 		setVisible(true);
 	}
 
@@ -52,24 +43,32 @@ public class WindowGame extends JFrame{
 		this.areaSize = areaSize;
 		play = true;
 		btnHero.setBounds(getWidth()/2,getHeight() - 100 , 50,50);
-		this.createAreas();
+		createAreas();
 		generateEnemies();
 		moveEnemiesDown();
 		refreshClock();
 	}
 
 	private void createAreas() {
-		//lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblCenter.setBounds(100,100,100,100);
+		lblCenter = new JLabel("");	
+		lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblCenter.setBackground(Color.RED);
-		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblLeft.setBackground(Color.YELLOW);
-		lblRigth.setBounds(this.lblCenter.getX()+this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
-		lblRigth.setBackground(Color.BLUE);
+		lblCenter.setOpaque(true);
 		add(lblCenter);
-		add(lblRigth);
+
+		lblLeft = new JLabel("");
+		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
+		lblLeft.setOpaque(true);
+		lblLeft.setBackground(Color.YELLOW);
 		add(lblLeft);
-		getContentPane().repaint();
+		
+		lblRigth = new JLabel("");
+		lblRigth.setBounds(this.lblCenter.getX()+this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
+		lblRigth.setOpaque(true);
+		lblRigth.setBackground(Color.BLUE);
+		add(lblRigth);
+				
+		repaint();
 	}
 
 	public void moveToRigth(){
