@@ -32,11 +32,24 @@ public class WindowGame extends JFrame{
 		getContentPane().setBackground(Color.WHITE);
 		btnHero = new JButton("H");
 		add(btnHero);
+		lblCenter = new JLabel("");
+		lblLeft = new JLabel("");
+		lblRigth = new JLabel("");
 		lblClock = new JLabel("");
+		add(lblCenter);
+		add(lblRigth);
+		add(lblLeft);
 		lblClock.setBounds(10, 10, 200, 100);
 		lblClock.setFont(new Font("Arial", Font.PLAIN, 22));
 		add(lblClock);
 		setVisible(true);
+		btnHero.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				moveToRigth();
+			}
+		});
 	}
 
 	public void init(int areaSize){
@@ -49,24 +62,18 @@ public class WindowGame extends JFrame{
 		refreshClock();
 	}
 
-	private void createAreas() {
-		lblCenter = new JLabel("");	
+	private void createAreas() {			
 		lblCenter.setBounds(btnHero.getX(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblCenter.setBackground(Color.RED);
-		lblCenter.setOpaque(true);
-		add(lblCenter);
+		lblCenter.setOpaque(true);	
 
-		lblLeft = new JLabel("");
 		lblLeft.setBounds(this.lblCenter.getX()-this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblLeft.setOpaque(true);
-		lblLeft.setBackground(Color.YELLOW);
-		add(lblLeft);
+		lblLeft.setBackground(Color.YELLOW);		
 		
-		lblRigth = new JLabel("");
 		lblRigth.setBounds(this.lblCenter.getX()+this.lblCenter.getWidth(), btnHero.getY()-this.areaSize, btnHero.getWidth(), this.areaSize);
 		lblRigth.setOpaque(true);
-		lblRigth.setBackground(Color.BLUE);
-		add(lblRigth);
+		lblRigth.setBackground(Color.BLUE);		
 				
 		repaint();
 	}
@@ -74,12 +81,14 @@ public class WindowGame extends JFrame{
 	public void moveToRigth(){
 		if (btnHero.getX()+60<getWidth()) {
 			btnHero.setLocation(new Point(btnHero.getX()+10, btnHero.getY()));
+			createAreas();
 		}
 	}
 	
 	public void moveToLeft(){
 		if (btnHero.getX()-10 > 0) {
 			btnHero.setLocation(new Point(btnHero.getX()-10, btnHero.getY()));
+			createAreas();
 		}
 	}
 	
